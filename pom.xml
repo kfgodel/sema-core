@@ -33,6 +33,11 @@
   </repositories>
 
   <dependencies>
+    <dependency>
+      <groupId>ar.com.kfgodel</groupId>
+      <artifactId>nary</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
 
 

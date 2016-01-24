@@ -1,8 +1,11 @@
 package ar.com.kfgodel.sema.core;
 
 import ar.com.dgarcia.javaspec.api.Variable;
+import ar.com.kfgodel.sema.core.api.EntityStateChanger;
 import ar.com.kfgodel.sema.core.api.EntityStateObserver;
 import ar.com.kfgodel.sema.core.api.SemaConfiguration;
+import ar.com.kfgodel.sema.core.api.StateRepository;
+import ar.com.kfgodel.sema.core.impl.InMemoryRepository;
 
 /**
  * This class implements the configuration to version a string variable value history
@@ -11,15 +14,27 @@ import ar.com.kfgodel.sema.core.api.SemaConfiguration;
 public class StringVariableConfiguration implements SemaConfiguration {
 
   private Variable<String> variable;
+  private InMemoryRepository repository;
 
   public static StringVariableConfiguration create(Variable<String> variable) {
     StringVariableConfiguration configuration = new StringVariableConfiguration();
     configuration.variable = variable;
+    configuration.repository = InMemoryRepository.create();
     return configuration;
   }
 
   @Override
   public EntityStateObserver getWorldObserver() {
     return ()-> variable.get();
+  }
+
+  @Override
+  public EntityStateChanger getWorldChanger() {
+    return (newState)-> variable.set((String) newState);
+  }
+
+  @Override
+  public StateRepository getWorldStateRepository() {
+    return repository;
   }
 }

@@ -3,6 +3,7 @@ package ar.com.kfgodel.sema.core;
 import ar.com.dgarcia.javaspec.api.TestContext;
 import ar.com.dgarcia.javaspec.api.Variable;
 import ar.com.kfgodel.sema.core.api.SemaCore;
+import ar.com.kfgodel.sema.core.api.StateRepository;
 
 import java.util.function.Supplier;
 
@@ -16,6 +17,9 @@ public interface SemaTestContext extends TestContext {
 
   Variable<String> variable();
   void variable(Supplier<Variable<String>> definition);
+
+  StateRepository repo();
+  void repo(Supplier<StateRepository> definition);
 
 
 }

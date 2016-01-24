@@ -23,4 +23,17 @@ public interface SemaCore {
    * @return The observed world state representation
    */
   Object getCurrentState();
+
+  /**
+   * Creates a backup copy of the current state of the observed world and stores its internally to be able to
+   * restore it later if needed
+   * @return The created version that represents the captured state
+   */
+  Object captureState();
+
+  /**
+   * Modifies the current state of the observed world to match the stored state represented by the given version
+   * @param version The version to restore the world to
+   */
+  void restoreStateTo(Object version);
 }
