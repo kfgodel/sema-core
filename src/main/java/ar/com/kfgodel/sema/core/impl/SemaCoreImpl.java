@@ -7,6 +7,7 @@ import ar.com.kfgodel.sema.core.api.*;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.function.Supplier;
 
 /**
  * This type implementes the core
@@ -15,7 +16,7 @@ import java.util.LinkedList;
 public class SemaCoreImpl implements SemaCore {
 
   private SemaConfiguration config;
-  private Deque<Object> versions;
+  private Deque<Version> versions;
 
   @Override
   public Object getCurrentState() {
@@ -25,22 +26,22 @@ public class SemaCoreImpl implements SemaCore {
   }
 
   @Override
-  public Object captureState() {
-    Object storeId = createNewVersion();
+  public Version captureState() {
+    Version storeId = createNewVersion();
     versions.addFirst(storeId);
     return storeId;
   }
 
   @Override
-  public void restoreStateTo(Object version) {
+  public void restoreStateTo(Version version) {
     StateRepository stateRepository = config.getWorldStateRepository();
-    Optional<Object> previousState = stateRepository.retrieve(version);
+    Optional<Object> previousState = stateRepository.retrieve(version.getStateId());
     EntityStateChanger changer = config.getWorldChanger();
     changer.changeStateTo(previousState.orElseThrow(()-> new SemaException("The given version["+version+"] doesn't have state to restore")));
   }
 
   @Override
-  public Nary<Object> versions() {
+  public Nary<Version> versions() {
     return NaryFromNative.create(versions.stream());
   }
 
@@ -52,10 +53,29 @@ public class SemaCoreImpl implements SemaCore {
   }
 
   /**
-   * Stores the current state as a new version
+   *
    * @return The created version
    */
-  private Object createNewVersion() {
+  private Version createNewVersion() {
+    Object stateId = persistState();
+    Optional<Object> metadata = generateMetadata();
+    return VersionImpl.create(stateId, metadata);
+  }
+
+  /**
+   * Generates metadata for the new version based on the configuration
+   * @return The optionally created metadata
+   */
+  private Optional<Object> generateMetadata() {
+    Supplier<Optional<Object>> metadataCreator = config.getMetadataCreator();
+    return metadataCreator.get();
+  }
+
+  /**
+   * Stores the current state into the state repository
+   * @return  The persisted state id
+   */
+  private Object persistState() {
     Object worldState = getCurrentState();
     StateRepository repo = config.getWorldStateRepository();
     return repo.store(worldState);

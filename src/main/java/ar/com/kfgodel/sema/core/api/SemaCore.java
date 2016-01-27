@@ -30,16 +30,16 @@ public interface SemaCore {
    * restore it later if needed
    * @return The created version that represents the captured state
    */
-  Object captureState();
+  Version captureState();
 
   /**
    * Modifies the current state of the observed world to match the stored state represented by the given version
    * @param version The version to restore the world to
    */
-  void restoreStateTo(Object version);
+  void restoreStateTo(Version version);
 
   /**
    * @return All the recorded versions in order, with the latest as first
    */
-  Nary<Object> versions();
+  Nary<Version> versions();
 }
