@@ -1,5 +1,6 @@
 package ar.com.kfgodel.sema.core.api;
 
+import ar.com.kfgodel.nary.api.Nary;
 import ar.com.kfgodel.sema.core.impl.SemaCoreImpl;
 
 /**
@@ -36,4 +37,9 @@ public interface SemaCore {
    * @param version The version to restore the world to
    */
   void restoreStateTo(Object version);
+
+  /**
+   * @return All the recorded versions in order, with the latest as first
+   */
+  Nary<Object> versions();
 }

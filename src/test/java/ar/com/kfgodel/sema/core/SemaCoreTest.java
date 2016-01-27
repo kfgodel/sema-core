@@ -3,10 +3,15 @@ package ar.com.kfgodel.sema.core;
 import ar.com.dgarcia.javaspec.api.JavaSpec;
 import ar.com.dgarcia.javaspec.api.JavaSpecRunner;
 import ar.com.dgarcia.javaspec.api.Variable;
+import ar.com.kfgodel.nary.api.Nary;
 import ar.com.kfgodel.sema.core.api.SemaConfiguration;
 import ar.com.kfgodel.sema.core.api.SemaCore;
 import ar.com.kfgodel.sema.core.api.SemaException;
+import org.assertj.core.util.Lists;
 import org.junit.runner.RunWith;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -58,6 +63,19 @@ public class SemaCoreTest extends JavaSpec<SemaTestContext> {
             }catch(SemaException e){
               assertThat(e).hasMessage("The given version["+incorrectVersion+"] doesn't have state to restore");
             }
+          });
+          
+          it("are represented as an empty nary if no history",()->{
+            Nary<Object> versions = context().core().versions();
+            assertThat(versions.count()).isEqualTo(0);
+          });
+
+          it("contains the latest version as first element, and the oldest as the last",()->{
+            Object oldestVersion = context().core().captureState();
+            Object newestVersion = context().core().captureState();
+
+            List<Object> allVersion = context().core().versions().collect(Collectors.toList());
+            assertThat(allVersion).isEqualTo(Lists.newArrayList(newestVersion, oldestVersion));
           });
         });
 

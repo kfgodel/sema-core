@@ -9,5 +9,5 @@ public interface EntityStateChanger {
    * Modifies the state of the world to match the given state
    * @param worldState The state representation to match in the observed world
    */
-  void changeState(Object worldState);
+  void changeStateTo(Object worldState);
 }
