@@ -2,7 +2,7 @@ package ar.com.kfgodel.sema.core;
 
 import ar.com.dgarcia.javaspec.api.JavaSpec;
 import ar.com.dgarcia.javaspec.api.JavaSpecRunner;
-import ar.com.kfgodel.sema.core.impl.InMemoryRepository;
+import ar.com.kfgodel.sema.core.impl.InMemoryStateRepository;
 import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +16,7 @@ public class InMemoryRepoTest extends JavaSpec<SemaTestContext> {
   @Override
   public void define() {
     describe("an in-memory state repo", () -> {
-      context().repo(InMemoryRepository::create);
+      context().repo(InMemoryStateRepository::create);
 
       it("uses a sequential integer to identify the stored state (starting with 1)",()->{
           assertThat(context().repo().store("one")).isEqualTo(1);

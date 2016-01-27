@@ -7,7 +7,7 @@ import ar.com.kfgodel.sema.core.api.*;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * This type implementes the core
@@ -57,26 +57,28 @@ public class SemaCoreImpl implements SemaCore {
    * @return The created version
    */
   private Version createNewVersion() {
-    Object stateId = persistState();
-    Optional<Object> metadata = generateMetadata();
+    Object currentState = getCurrentState();
+    Object stateId = persistState(currentState);
+    Optional<Object> metadata = generateMetadata(currentState);
     return VersionImpl.create(stateId, metadata);
   }
 
   /**
-   * Generates metadata for the new version based on the configuration
+   * Generates metadata for the new version based on the configuration and the captured state
    * @return The optionally created metadata
+   * @param currentState The state to generate metadata for
    */
-  private Optional<Object> generateMetadata() {
-    Supplier<Optional<Object>> metadataCreator = config.getMetadataCreator();
-    return metadataCreator.get();
+  private Optional<Object> generateMetadata(Object currentState) {
+    Function<Object, Optional<Object>> metadataCreator = config.getMetadataCreator();
+    return metadataCreator.apply(currentState);
   }
 
   /**
    * Stores the current state into the state repository
    * @return  The persisted state id
+   * @param worldState
    */
-  private Object persistState() {
-    Object worldState = getCurrentState();
+  private Object persistState(Object worldState) {
     StateRepository repo = config.getWorldStateRepository();
     return repo.store(worldState);
   }

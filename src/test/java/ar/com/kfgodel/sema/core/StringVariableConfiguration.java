@@ -7,9 +7,9 @@ import ar.com.kfgodel.sema.core.api.EntityStateChanger;
 import ar.com.kfgodel.sema.core.api.EntityStateObserver;
 import ar.com.kfgodel.sema.core.api.SemaConfiguration;
 import ar.com.kfgodel.sema.core.api.StateRepository;
-import ar.com.kfgodel.sema.core.impl.InMemoryRepository;
+import ar.com.kfgodel.sema.core.impl.InMemoryStateRepository;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * This class implements the configuration to version a string variable value history
@@ -18,14 +18,14 @@ import java.util.function.Supplier;
 public class StringVariableConfiguration implements SemaConfiguration {
 
   private Variable<String> variable;
-  private InMemoryRepository repository;
-  private Supplier<Optional<Object>> metadataCreator;
+  private InMemoryStateRepository repository;
+  private Function<Object, Optional<Object>> metadataCreator;
 
   public static StringVariableConfiguration create(Variable<String> variable) {
     StringVariableConfiguration configuration = new StringVariableConfiguration();
     configuration.variable = variable;
-    configuration.repository = InMemoryRepository.create();
-    configuration.metadataCreator = NaryFromNative::empty;
+    configuration.repository = InMemoryStateRepository.create();
+    configuration.metadataCreator = (state)-> NaryFromNative.empty();
     return configuration;
   }
 
@@ -45,12 +45,12 @@ public class StringVariableConfiguration implements SemaConfiguration {
   }
 
   @Override
-  public void replaceMetadataCreatorWith(Supplier<Optional<Object>> otherCreator) {
+  public void replaceMetadataCreatorWith(Function<Object, Optional<Object>> otherCreator) {
     this.metadataCreator = otherCreator;
   }
 
   @Override
-  public Supplier<Optional<Object>> getMetadataCreator() {
+  public Function<Object, Optional<Object>> getMetadataCreator() {
     return metadataCreator;
   }
 }

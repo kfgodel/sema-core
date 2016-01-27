@@ -11,7 +11,7 @@ import java.util.Map;
  * This type implements a state repository using memory
  * Created by kfgodel on 24/01/16.
  */
-public class InMemoryRepository implements StateRepository {
+public class InMemoryStateRepository implements StateRepository {
 
   private int nextId;
   private Map<Integer, Object> statePerId;
@@ -29,8 +29,8 @@ public class InMemoryRepository implements StateRepository {
     return NaryFromNative.ofNullable(storedState);
   }
 
-  public static InMemoryRepository create() {
-    InMemoryRepository repository = new InMemoryRepository();
+  public static InMemoryStateRepository create() {
+    InMemoryStateRepository repository = new InMemoryStateRepository();
     repository.nextId = 1;
     repository.statePerId = new HashMap<>();
     return repository;

@@ -2,7 +2,7 @@ package ar.com.kfgodel.sema.core.api;
 
 import ar.com.kfgodel.optionals.Optional;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * This type represents the configuration needed for a semantic core
@@ -28,11 +28,11 @@ public interface SemaConfiguration {
    * Defines a metadata creator to attach to each version
    * @param otherCreator
    */
-  void replaceMetadataCreatorWith(Supplier<Optional<Object>> otherCreator);
+  void replaceMetadataCreatorWith(Function<Object, Optional<Object>> otherCreator);
 
   /**
    * @return the metadata creator defined for this config.
    * The metadata is attached to each created version
    */
-  Supplier<Optional<Object>> getMetadataCreator();
+  Function<Object, Optional<Object>> getMetadataCreator();
 }

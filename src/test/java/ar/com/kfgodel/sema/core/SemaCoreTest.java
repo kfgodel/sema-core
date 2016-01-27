@@ -15,7 +15,7 @@ import org.assertj.core.util.Lists;
 import org.junit.runner.RunWith;
 
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +36,7 @@ public class SemaCoreTest extends JavaSpec<SemaTestContext> {
         assertThat(SemaCore.createdFor(config)).isNotNull();
       });
 
-      describe("when versioning a string variable history", () -> {
+      describe("when versioning a String Variable history", () -> {
         context().core(()-> SemaCore.createdFor(context().configuration()));
         context().configuration(()-> StringVariableConfiguration.create(context().variable()));
         context().variable(()-> Variable.of("Hello"));
@@ -82,7 +82,7 @@ public class SemaCoreTest extends JavaSpec<SemaTestContext> {
 
             it("is present if a metadata creator is defined in the config",()->{
               Object exampleMetadata = new Object();
-              Supplier<Optional<Object>> nonEmptyMetadataCreator = () -> NaryFromNative.of(exampleMetadata);
+              Function<Object, Optional<Object>> nonEmptyMetadataCreator = (state) -> NaryFromNative.of(exampleMetadata);
 
               context().configuration().replaceMetadataCreatorWith(nonEmptyMetadataCreator);
               Optional<Object> metadata = context().metadata();
