@@ -3,11 +3,9 @@ package ar.com.kfgodel.sema.core;
 import ar.com.dgarcia.javaspec.api.Variable;
 import ar.com.kfgodel.nary.impl.NaryFromNative;
 import ar.com.kfgodel.optionals.Optional;
-import ar.com.kfgodel.sema.core.api.EntityStateChanger;
-import ar.com.kfgodel.sema.core.api.EntityStateObserver;
-import ar.com.kfgodel.sema.core.api.SemaConfiguration;
-import ar.com.kfgodel.sema.core.api.StateRepository;
+import ar.com.kfgodel.sema.core.api.*;
 import ar.com.kfgodel.sema.core.impl.InMemoryStateRepository;
+import ar.com.kfgodel.sema.core.impl.InMemoryVersionRepository;
 
 import java.util.function.Function;
 
@@ -20,12 +18,14 @@ public class StringVariableConfiguration implements SemaConfiguration {
   private Variable<String> variable;
   private InMemoryStateRepository repository;
   private Function<Object, Optional<Object>> metadataCreator;
+  private InMemoryVersionRepository versionRepo;
 
   public static StringVariableConfiguration create(Variable<String> variable) {
     StringVariableConfiguration configuration = new StringVariableConfiguration();
     configuration.variable = variable;
     configuration.repository = InMemoryStateRepository.create();
     configuration.metadataCreator = (state)-> NaryFromNative.empty();
+    configuration.versionRepo = InMemoryVersionRepository.create();
     return configuration;
   }
 
@@ -52,5 +52,10 @@ public class StringVariableConfiguration implements SemaConfiguration {
   @Override
   public Function<Object, Optional<Object>> getMetadataCreator() {
     return metadataCreator;
+  }
+
+  @Override
+  public VersionRepository getVersionRepository() {
+    return versionRepo;
   }
 }

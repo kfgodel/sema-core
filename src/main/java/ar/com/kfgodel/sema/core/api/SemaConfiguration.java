@@ -35,4 +35,9 @@ public interface SemaConfiguration {
    * The metadata is attached to each created version
    */
   Function<Object, Optional<Object>> getMetadataCreator();
+
+  /**
+   * @return The version repository indicated in this config
+   */
+  VersionRepository getVersionRepository();
 }

@@ -44,6 +44,11 @@ public class SemaCoreTest extends JavaSpec<SemaTestContext> {
         it("allows access to the current value when asking the current state",()->{
           assertThat(context().core().getCurrentState()).isEqualTo("Hello");
         });
+        
+        it("allows changes to the current value, through state changes",()->{
+          context().core().changeCurrentStateTo("Bye");
+          assertThat(context().variable().get()).isEqualTo("Bye");
+        });   
 
         describe("a single version", () -> {
           context().version(()->  context().core().captureState());

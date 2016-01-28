@@ -1,12 +1,9 @@
 package ar.com.kfgodel.sema.core.impl;
 
 import ar.com.kfgodel.nary.api.Nary;
-import ar.com.kfgodel.nary.impl.NaryFromNative;
 import ar.com.kfgodel.optionals.Optional;
 import ar.com.kfgodel.sema.core.api.*;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.function.Function;
 
 /**
@@ -16,7 +13,6 @@ import java.util.function.Function;
 public class SemaCoreImpl implements SemaCore {
 
   private SemaConfiguration config;
-  private Deque<Version> versions;
 
   @Override
   public Object getCurrentState() {
@@ -26,29 +22,35 @@ public class SemaCoreImpl implements SemaCore {
   }
 
   @Override
+  public void changeCurrentStateTo(Object newState) {
+    EntityStateChanger changer = config.getWorldChanger();
+    changer.changeStateTo(newState);
+  }
+
+
+  @Override
   public Version captureState() {
-    Version storeId = createNewVersion();
-    versions.addFirst(storeId);
-    return storeId;
+    Version createdVersion = createNewVersion();
+    VersionRepository repository = config.getVersionRepository();
+    repository.store(createdVersion);
+    return createdVersion;
   }
 
   @Override
   public void restoreStateTo(Version version) {
-    StateRepository stateRepository = config.getWorldStateRepository();
-    Optional<Object> previousState = stateRepository.retrieve(version.getStateId());
-    EntityStateChanger changer = config.getWorldChanger();
-    changer.changeStateTo(previousState.orElseThrow(()-> new SemaException("The given version["+version+"] doesn't have state to restore")));
+    Optional<Object> previousState = retrieveState(version);
+    Object newState = previousState.orElseThrow(() -> new SemaException("The given version[" + version + "] doesn't have state to restore"));
+    changeCurrentStateTo(newState);
   }
 
   @Override
   public Nary<Version> versions() {
-    return NaryFromNative.create(versions.stream());
+    return config.getVersionRepository().getVersions();
   }
 
   public static SemaCoreImpl create(SemaConfiguration configuration) {
     SemaCoreImpl core = new SemaCoreImpl();
     core.config = configuration;
-    core.versions = new LinkedList<>();
     return core;
   }
 
@@ -60,7 +62,8 @@ public class SemaCoreImpl implements SemaCore {
     Object currentState = getCurrentState();
     Object stateId = persistState(currentState);
     Optional<Object> metadata = generateMetadata(currentState);
-    return VersionImpl.create(stateId, metadata);
+    VersionImpl createdVersion = VersionImpl.create(stateId, metadata);
+    return createdVersion;
   }
 
   /**
@@ -81,6 +84,17 @@ public class SemaCoreImpl implements SemaCore {
   private Object persistState(Object worldState) {
     StateRepository repo = config.getWorldStateRepository();
     return repo.store(worldState);
+  }
+
+  /**
+   * Gets the state that the world had in the given version
+   * @param version The version to restore
+   * @return The retrieved world state
+   */
+  private Optional<Object> retrieveState(Version version) {
+    Object stateId = version.getStateId();
+    StateRepository stateRepository = config.getWorldStateRepository();
+    return stateRepository.retrieve(stateId);
   }
 
 
